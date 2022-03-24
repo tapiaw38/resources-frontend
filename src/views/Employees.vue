@@ -6,12 +6,15 @@
         ><home></home
       ></router-link>
       <div class="search">
-        <input type="text" placeholder="Buscar aqui ..." />
-        <select name="select-type" id="select-type">
-          <option value="">Seleccionar tipo</option>
-          <option value="1">Becado</option>
-          <option value="2">Contratado</option>
-          <option value="3">Planta Permanente</option>
+        <input type="text" v-model="search" placeholder="Buscar aqui ..." />
+        <select v-model="typeSelected" name="select-type" id="select-type">
+          <option
+            v-for="option in getOptionType"
+            :value="option.value"
+            :key="option.text"
+          >
+            {{ option.text }}
+          </option>
         </select>
       </div>
       <button>
@@ -40,7 +43,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="employee in employees" :key="employee.id">
+          <template v-for="employee in searchEmployee" :key="employee.id">
             <tr>
               <td>
                 <user></user>
@@ -179,10 +182,13 @@
               id="employee_type"
               v-model="employee.employee_type"
             >
-              <option value="">Sin revista</option>
-              <option value="3">Planta Permanente</option>
-              <option value="2">Empleado</option>
-              <option value="1">Becado</option>
+              <option
+                v-for="option in getOptionType"
+                :value="option.value"
+                :key="option.text"
+              >
+                {{ option.text }}
+              </option>
             </select>
           </div>
           <div class="form-group">
@@ -222,7 +228,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import api from "../api/api";
 import useModal from "../composables/useModal";
 import { formatDate, formatDateDatabase } from "../helpers/formatDate";
@@ -267,6 +273,32 @@ export default {
       employee_type: "",
       workplace: "",
     });
+
+    let search = ref("");
+    // select type
+    let typeSelected = ref(2);
+
+    const getOptionType = computed(() => {
+      return employeeTypes.value
+        .map((type) => {
+          return {
+            value: type.id,
+            text: type.name,
+          };
+        })
+        .filter((type) => type.value !== 1);
+    });
+
+    //get employees
+
+    const searchEmployee = computed(() =>
+      employees.value.filter((e) => {
+        return (
+          e.first_name.toLowerCase().includes(search.value.toLowerCase()) ||
+          String(e.last_name).toLowerCase().includes(search.value.toLowerCase())
+        );
+      })
+    );
 
     // select employee
 
@@ -353,7 +385,11 @@ export default {
     // fetch employees and workplaces
 
     const fetchDataEmployees = async () => {
-      const { data } = await api.get("employees");
+      const { data } = await api.get("employees/get_by_type", {
+        params: {
+          type_id: typeSelected.value,
+        },
+      });
       employees.value = data;
     };
 
@@ -373,6 +409,10 @@ export default {
       fetchDataEmployeeTypes();
     });
 
+    watch(typeSelected, async () => {
+      await fetchDataEmployees();
+    });
+
     return {
       employees,
       workplaces,
@@ -383,6 +423,10 @@ export default {
       formatDate,
       selectEmployee,
       updateEmployee,
+      getOptionType,
+      typeSelected,
+      search,
+      searchEmployee,
     };
   },
 };
