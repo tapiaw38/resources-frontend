@@ -4,5 +4,6 @@ import Clipboard from "./Clipboard";
 import User from "./User";
 import Add from "./Add";
 import Home from "./Home";
+import Pdf from "./Pdf";
 
-export { Edit, Delete, Clipboard, User, Add, Home };
+export { Edit, Delete, Clipboard, User, Add, Home, Pdf };

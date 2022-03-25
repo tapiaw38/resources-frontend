@@ -26,7 +26,7 @@
     <div v-if="searchEmployee.length > 0">
       <template v-for="employee in searchEmployee" :key="employee.id">
         <button class="btn-download" @click="downloadCardEmployee(employee.id)">
-          Descargar {{ employee.first_name }}
+          <pdf></pdf> {{ employee.last_name }} {{ employee.first_name }}
         </button>
         <div class="container-target" :id="'target-' + employee.id">
           <div
@@ -123,10 +123,12 @@ import api from "../api/api";
 
 import Loader from "../components/Loader.vue";
 
+import { Pdf } from "../components/Icons";
 export default {
   name: "Home",
   components: {
     Loader,
+    Pdf,
   },
   setup() {
     let months = ref([
@@ -144,7 +146,7 @@ export default {
       { text: "Diciembre", value: 12 },
     ]);
 
-    let monthSelected = ref(new Date().getMonth() + 1);
+    let monthSelected = ref(new Date().getMonth() + 2);
 
     let employees = ref([]);
 
@@ -376,6 +378,10 @@ td {
   text-align: left;
 }
 
+.name td {
+  border: none;
+}
+
 .footer {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -520,6 +526,7 @@ td {
   margin-left: 20px;
   cursor: pointer;
   border: 1px solid #04aa6d;
+  font-size: 11.5px;
 
   &:hover {
     background-color: white;
