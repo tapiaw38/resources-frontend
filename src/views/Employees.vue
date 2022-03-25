@@ -335,10 +335,12 @@ export default {
         first_name: employee.value.first_name,
         last_name: employee.value.last_name,
         document_number: employee.value.document_number,
-        birth_date: moment(employee.value.birth_date).add("day", 1).format(),
-        date_admission: moment(employee.value.date_admission)
-          .add("day", 1)
-          .format(),
+        birth_date: employee.value.birth_date
+          ? moment(employee.value.birth_date).add("days", 1).format()
+          : null,
+        date_admission: employee.value.date_admission
+          ? moment(employee.value.date_admission).add("days", 1).format()
+          : null,
         phone: employee.value.phone,
         address: employee.value.address,
         picture: employee.value.picture,
