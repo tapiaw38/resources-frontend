@@ -2,9 +2,7 @@
   <div class="topnav">
     <router-link class="active" :to="{ name: 'home' }">Inicio</router-link>
     <router-link :to="{ name: 'employees' }">Empleados</router-link>
-    <!--
-    <a href="#contact">Becados</a>
-    -->
+    <router-link :to="{ name: 'trainees' }">Becados</router-link>
     <router-link :to="{ name: 'workplaces' }">Areas</router-link>
     <router-link :to="{ name: 'targets' }">Imprimir tarjetas</router-link>
     <div class="user-content">

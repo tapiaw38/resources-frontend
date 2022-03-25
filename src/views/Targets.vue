@@ -9,6 +9,15 @@
       <div>
         <input type="text" placeholder="Buscar aquí..." v-model="search" />
       </div>
+      <select v-model="typeSelected" name="select-type" id="select-type">
+        <option
+          v-for="option in getOptionType"
+          :value="option.value"
+          :key="option.text"
+        >
+          {{ option.text }}
+        </option>
+      </select>
     </div>
     <div :class="{ loading: loader }">
       <loader v-show="loader"></loader>
@@ -107,7 +116,7 @@
 
 <script>
 // @ is an alias to /src
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import api from "../api/api";
@@ -154,11 +163,39 @@ export default {
 
     let search = ref("");
     let loader = ref(false);
+    let typeSelected = ref(2);
+    let employeeTypes = ref([]);
 
-    const fetchData = async () => {
-      const { data } = await api.get("employees");
+    const getOptionType = computed(() => {
+      return employeeTypes.value.map((type) => {
+        return {
+          value: type.id,
+          text: type.name,
+        };
+      });
+    });
+
+    // fetch data employees
+
+    const fetchDataEmployee = async () => {
+      const { data } = await api.get("employees/get_by_type", {
+        params: {
+          type_id: typeSelected.value,
+        },
+      });
       employees.value = data;
     };
+
+    const fetchDataEmployeeTypes = async () => {
+      const { data } = await api.get("types");
+      employeeTypes.value = data;
+    };
+
+    watch(typeSelected, async () => {
+      await fetchDataEmployee();
+    });
+
+    // search employee
 
     const searchEmployee = computed(() =>
       employees.value.filter((e) => {
@@ -233,8 +270,10 @@ export default {
       }
     };
 
+    // mounted component
     onMounted(() => {
-      fetchData();
+      fetchDataEmployee();
+      fetchDataEmployeeTypes();
     });
 
     return {
@@ -247,6 +286,8 @@ export default {
       months,
       monthSelected,
       loader,
+      typeSelected,
+      getOptionType,
     };
   },
 };
