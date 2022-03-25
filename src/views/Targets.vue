@@ -194,7 +194,9 @@ export default {
     };
 
     watch(typeSelected, async () => {
+      loader.value = true;
       await fetchDataEmployee();
+      loader.value = false;
     });
 
     // search employee
@@ -526,7 +528,8 @@ td {
   margin-left: 20px;
   cursor: pointer;
   border: 1px solid #04aa6d;
-  font-size: 11.5px;
+  font-size: 12px;
+  font-weight: bold;
 
   &:hover {
     background-color: white;

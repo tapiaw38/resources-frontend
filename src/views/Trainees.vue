@@ -8,10 +8,16 @@
       <div class="search">
         <input type="text" v-model="search" placeholder="Buscar aqui ..." />
       </div>
-      <button>
-        <add></add>
-        <span>Nuevo Becado</span>
-      </button>
+      <div class="options">
+        <button @click="exportToExcel">
+          <excel></excel>
+          <span>Descargar</span>
+        </button>
+        <button>
+          <add></add>
+          <span>Nuevo Becado</span>
+        </button>
+      </div>
     </div>
     <div v-if="employees.length > 0">
       <table id="customers">
@@ -216,7 +222,7 @@ import moment from "moment";
 import DefaultModal from "../containers/DefaultModal.vue";
 import Loader from "../components/Loader.vue";
 
-import { Edit, User, Add, Home } from "../components/Icons";
+import { Edit, User, Add, Home, Excel } from "../components/Icons";
 export default {
   name: "Employees",
   components: {
@@ -226,6 +232,7 @@ export default {
     User,
     Add,
     Home,
+    Excel,
   },
   setup() {
     const { isModalVisible, showModal, closeModal } = useModal();
@@ -360,6 +367,45 @@ export default {
         console.log(error);
       }
     };
+    // convert json to excel
+
+    let xlsx = require("json-as-xlsx");
+
+    const exportToExcel = async () => {
+      let data = [
+        {
+          sheet: "Becados",
+          columns: [
+            { label: "N°", value: "number" },
+            { label: "Apellido", value: "last_name" },
+            { label: "Nombre", value: "first_name" },
+            { label: "DNI", value: "document_number" },
+            { label: "Monto", value: "salary" },
+            { label: "Area", value: "workplace" },
+            { label: "N° Becado", value: "work_number" },
+          ],
+          content: await employees.value.map((e, i) => {
+            return {
+              number: i + 1,
+              last_name: e.last_name,
+              first_name: e.first_name,
+              document_number: e.document_number,
+              salary: e.salary,
+              workplace: e.workplace.name,
+              work_number: e.work_number,
+            };
+          }),
+        },
+      ];
+
+      let settings = {
+        fileName: "Becados", // Name of the resulting spreadsheet
+        extraLength: 3, // A bigger number means that columns will be wider
+        writeOptions: {}, // Style options from https://github.com/SheetJS/sheetjs#writing-options
+      };
+
+      xlsx(data, settings);
+    };
 
     // fetch employees and workplaces
 
@@ -406,6 +452,7 @@ export default {
       typeSelected,
       search,
       searchEmployee,
+      exportToExcel,
     };
   },
 };
@@ -543,6 +590,15 @@ export default {
       border-radius: 5px;
       margin-left: 10px;
     }
+  }
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+
+  button {
+    margin-left: 10px;
   }
 }
 
