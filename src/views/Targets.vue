@@ -180,11 +180,9 @@ export default {
     // fetch data employees
 
     const fetchDataEmployee = async () => {
-      const { data } = await api.get("employees/get_by_type", {
-        params: {
-          type_id: typeSelected.value,
-        },
-      });
+      const { data } = await api.get(
+        `employees/get_by_type/${typeSelected.value}`
+      );
       employees.value = data;
     };
 

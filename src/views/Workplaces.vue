@@ -194,10 +194,6 @@ export default {
     };
 
     const updateWorkplace = async () => {
-      let params = {
-        id: workplace.value.id,
-      };
-
       let dataUpdate = {
         name: workplace.value.name,
         code: workplace.value.code,
@@ -209,9 +205,10 @@ export default {
       }
 
       try {
-        const { data } = await api.put("workplaces/update", dataUpdate, {
-          params,
-        });
+        const { data } = await api.put(
+          `workplaces/update/${workplace.value.id}`,
+          dataUpdate
+        );
         const idx = workplaces.value.map((wp) => wp.id).indexOf(data.id);
         workplaces.value[idx] = data;
         closeModal();

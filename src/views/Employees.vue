@@ -17,7 +17,7 @@
           </option>
         </select>
       </div>
-      <button>
+      <button @click="createShowModal">
         <add></add>
         <span>Nuevo Empleado</span>
       </button>
@@ -66,18 +66,16 @@
               <td>{{ employee.category }}</td>
               <td>
                 {{
-                  employee.employee_type.name
+                  employee.employee_type
                     ? employee.employee_type.name
                     : "Sin revista"
                 }}
               </td>
               <td>
-                {{
-                  employee.workplace.name ? employee.workplace.name : "Sin area"
-                }}
+                {{ employee.workplace ? employee.workplace.name : "Sin area" }}
               </td>
               <td>
-                {{ employee.workplace.code ? employee.workplace.code : "" }}
+                {{ employee.workplace ? employee.workplace.code : "" }}
               </td>
               <td>{{ employee.work_number }}</td>
               <td>
@@ -198,7 +196,7 @@
               id="workplace_id"
               v-model="employee.workplace"
             >
-              <option value="">Sin area</option>
+              <option :value="0">Sin area</option>
               <option
                 v-for="workplace in workplaces"
                 :key="workplace.id"
@@ -215,6 +213,136 @@
               class="form-control"
               id="work_number"
               v-model="employee.work_number"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+      </template>
+      <template v-slot:footer>
+        <br />
+      </template>
+    </default-modal>
+    <!-- create employee modal -->
+    <default-modal v-if="createIsModalVisible" @close="createCloseModal">
+      <template v-slot:header>
+        <h3>Agregar Empleado</h3>
+      </template>
+      <template v-slot:body>
+        <form class="form-employee" @submit.prevent="createEmployeeAction">
+          <div class="form-group">
+            <label for="file_code">Legajo</label>
+            <input
+              type="text"
+              class="form-control"
+              id="file_code"
+              v-model="createEmployee.file_code"
+            />
+          </div>
+          <div class="form-group">
+            <label for="agent_number">N Agente</label>
+            <input
+              type="text"
+              class="form-control"
+              id="agent_number"
+              v-model="createEmployee.agent_number"
+            />
+          </div>
+          <div class="form-group">
+            <label for="first_name">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="first_name"
+              required
+              v-model="createEmployee.first_name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="last_name">Apellido</label>
+            <input
+              type="text"
+              class="form-control"
+              id="last_name"
+              required
+              v-model="createEmployee.last_name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="document_number">DNI</label>
+            <input
+              type="text"
+              class="form-control"
+              id="document_number"
+              v-model="createEmployee.document_number"
+            />
+          </div>
+          <div class="form-group">
+            <label for="birth_date">Fec Nac</label>
+            <input
+              type="date"
+              class="form-control"
+              id="birth_date"
+              v-model="createEmployee.birth_date"
+            />
+          </div>
+          <div class="form-group">
+            <label for="date_admission">Ingreso</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_admission"
+              v-model="createEmployee.date_admission"
+            />
+          </div>
+          <div class="form-group">
+            <label for="category">Categoria</label>
+            <input
+              type="number"
+              class="form-control"
+              id="category"
+              v-model="createEmployee.category"
+            />
+          </div>
+          <div class="form-group">
+            <label for="employee_type">Revista</label>
+            <select
+              class="form-control"
+              id="employee_type"
+              v-model="createEmployee.employee_type"
+            >
+              <option
+                v-for="option in getOptionType"
+                :value="option.value"
+                :key="option.text"
+              >
+                {{ option.text }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="workplace_id">Area</label>
+            <select
+              class="form-control"
+              id="workplace_id"
+              v-model="createEmployee.workplace"
+            >
+              <option value="">Sin area</option>
+              <option
+                v-for="workplace in workplaces"
+                :key="workplace.id"
+                :value="workplace.id"
+              >
+                {{ workplace.name }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="work_number">N Emple.</label>
+            <input
+              type="text"
+              class="form-control"
+              id="work_number"
+              v-model="createEmployee.work_number"
             />
           </div>
           <button type="submit" class="btn btn-primary">Guardar</button>
@@ -250,6 +378,11 @@ export default {
   },
   setup() {
     const { isModalVisible, showModal, closeModal } = useModal();
+    const {
+      isModalVisible: createIsModalVisible,
+      showModal: createShowModal,
+      closeModal: createCloseModal,
+    } = useModal();
 
     let employees = ref([]);
     let workplaces = ref([]);
@@ -300,6 +433,26 @@ export default {
       })
     );
 
+    // create employee
+
+    const createEmployee = ref({
+      file_code: "",
+      agent_number: "",
+      first_name: "",
+      last_name: "",
+      document_number: "",
+      birth_date: "",
+      date_admission: "",
+      phone: "",
+      address: "",
+      picture: "",
+      salary: 0,
+      category: 10,
+      work_number: "",
+      employee_type: 2,
+      workplace: 0,
+    });
+
     // select employee
 
     const selectEmployee = (e) => {
@@ -318,17 +471,13 @@ export default {
       employee.value.category = e.category;
       employee.value.status = e.status;
       employee.value.work_number = e.work_number;
-      employee.value.employee_type = e.employee_type.id;
-      employee.value.workplace = e.workplace.id;
+      employee.value.employee_type = e.employee_type ? e.employee_type.id : 0;
+      employee.value.workplace = e.workplace ? e.workplace.id : 0;
       showModal();
     };
 
     // update employee
     const updateEmployee = async () => {
-      let params = {
-        id: employee.value.id,
-      };
-
       let dataUpdate = {
         file_code: employee.value.file_code,
         agent_number: employee.value.agent_number,
@@ -353,9 +502,10 @@ export default {
       };
 
       try {
-        const { data } = await api.put("/employees/update", dataUpdate, {
-          params,
-        });
+        const { data } = await api.put(
+          `/employees/update/${employee.value.id}`,
+          dataUpdate
+        );
         const idx = employees.value.map((e) => e.id).indexOf(data.id);
         employees.value[idx] = {
           id: data.id,
@@ -384,14 +534,67 @@ export default {
       }
     };
 
+    // create employee
+
+    const createEmployeeAction = async () => {
+      let dataCreate = {
+        file_code: createEmployee.value.file_code,
+        agent_number: createEmployee.value.agent_number,
+        first_name: createEmployee.value.first_name,
+        last_name: createEmployee.value.last_name,
+        document_number: createEmployee.value.document_number,
+        birth_date: createEmployee.value.birth_date
+          ? moment(createEmployee.value.birth_date).add("days", 1).format()
+          : null,
+        date_admission: createEmployee.value.date_admission
+          ? moment(createEmployee.value.date_admission).add("days", 1).format()
+          : null,
+        phone: createEmployee.value.phone,
+        address: createEmployee.value.address,
+        picture: createEmployee.value.picture,
+        salary: createEmployee.value.salary,
+        category: createEmployee.value.category,
+        status: createEmployee.value.status,
+        work_number: createEmployee.value.work_number,
+        employee_type: createEmployee.value.employee_type,
+        workplace: createEmployee.value.workplace,
+      };
+
+      try {
+        const { data } = await api.post(`/employees/create`, dataCreate);
+        employees.value.push({
+          id: data.id,
+          file_code: data.file_code,
+          agent_number: data.agent_number,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          document_number: data.document_number,
+          birth_date: data.birth_date,
+          date_admission: data.date_admission,
+          phone: data.phone,
+          address: data.address,
+          picture: data.picture,
+          salary: data.salary,
+          category: data.category,
+          status: data.status,
+          work_number: data.work_number,
+          employee_type: employeeTypes.value.find(
+            (e) => e.id === data.employee_type
+          ),
+          workplace: workplaces.value.find((w) => w.id == data.workplace),
+        });
+        createCloseModal();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     // fetch employees and workplaces
 
     const fetchDataEmployees = async () => {
-      const { data } = await api.get("employees/get_by_type", {
-        params: {
-          type_id: typeSelected.value,
-        },
-      });
+      const { data } = await api.get(
+        `employees/get_by_type/${typeSelected.value}`
+      );
       employees.value = data;
     };
 
@@ -429,6 +632,11 @@ export default {
       typeSelected,
       search,
       searchEmployee,
+      createIsModalVisible,
+      createShowModal,
+      createCloseModal,
+      createEmployee,
+      createEmployeeAction,
     };
   },
 };
