@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 
+import employeeRouter from "../modules/employee/router";
+import cardRouter from "../modules/card/router";
+
 const routes = [
   {
     path: "/",
@@ -8,29 +11,13 @@ const routes = [
     component: Home,
   },
   {
-    path: "/employees",
-    name: "employees",
-    component: () =>
-      import(/* webpackChunkName: "employee" */ "../views/Employees.vue"),
+    path: "/employee",
+    ...employeeRouter,
   },
   {
-    path: "/trainees",
-    name: "trainees",
-    component: () =>
-      import(/* webpackChunkName: "trainee" */ "../views/Trainees.vue"),
+    path: "/cards",
+    ...cardRouter,
   },
-  {
-    path: "/targets",
-    name: "targets",
-    component: () =>
-      import(/* webpackChunkName: "targets" */ "../views/Targets.vue"),
-  },
-  {
-    path: "/workplaces",
-    name: "workplaces",
-    component: () =>
-      import(/* webpackChunkName: "workplaces" */ "../views/Workplaces.vue"),
-  }
 ];
 
 const router = createRouter({

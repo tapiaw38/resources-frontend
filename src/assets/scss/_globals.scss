@@ -1,0 +1,156 @@
+
+// buttons
+
+.btn {
+  padding: 0.5em 0.5em;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.5s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+}
+
+.btn-primary {
+  background-color: $primary;
+  color: $white;
+  font-size: 0.9em;
+  cursor: pointer;
+  border: 1px solid $primary;
+  &:hover {
+    background-color: white;
+    color: $primary;
+    transition: 0.5s;
+  }
+}
+
+.btn-outline {
+  background-color: $white;
+  color: $primary;
+  border: 1px solid $primary;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: $primary;
+    color: $white;
+    transition: 0.2s ease-in-out;
+  }
+}
+
+.btn-round {
+  border-radius: 50%;
+  padding: 0.5em 0.5em;
+  border: 2px solid transparent;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+
+// badges
+
+.badge {
+  width: 10px;
+  height: 10px;
+  font-size: 1.8em;
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  svg {
+    color: white;
+    width: 1.2em;
+    height: 1.2em;
+  }
+}
+
+// background - color
+
+.bg-primary {
+  background-color: $primary;
+}
+
+.bg-secondary {
+  background-color: $secondary;
+}
+
+.color-primary {
+  color: $primary;
+
+  svg {
+    color: $primary;
+  }
+}
+
+.color-secondary {
+  color: $secondary;
+}
+
+.color-white {
+  color: $white;
+}
+
+.color-black {
+  color: $black;
+}
+
+// flex
+
+.flex {
+  display: flex;
+}
+
+.flex-left {
+  justify-content: flex-start;
+}
+
+.flex-right {
+  justify-content: flex-end;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+// padding
+
+.pt {
+  padding-top: 1em;
+}
+
+.pl {
+  padding-left: 1em;
+}
+
+.pr {
+  padding-right: 1em;
+}
+
+.pb {
+  padding-bottom: 1em;
+}
+
+
+.mt {
+  margin-top: 1em;
+}
+
+.ml {
+  margin-left: 1em;
+}
+
+.mr {
+  margin-right: 1em;
+}
+
+.mb {
+  margin-bottom: 1em;
+}

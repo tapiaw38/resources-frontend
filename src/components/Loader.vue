@@ -2,12 +2,12 @@
   <div class="loader"></div>
 </template>
 
-<style>
+<style lang="scss" scoped>
 .loader {
-  border: 16px solid #f3f3f3;
+  border: 16px solid $white;
   border-radius: 50%;
-  border-top: 16px solid rgb(29, 27, 27);
-  border-bottom: 16px solid rgb(29, 27, 27);
+  border-top: 16px solid $secondary;
+  border-bottom: 16px solid $secondary;
   width: 120px;
   height: 120px;
   -webkit-animation: spin 2s linear infinite;

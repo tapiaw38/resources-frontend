@@ -317,15 +317,15 @@
 
 <script>
 import { ref, onMounted, computed, watch } from "vue";
-import api from "../api/api";
-import useModal from "../composables/useModal";
-import { formatDate, formatDateDatabase } from "../helpers/formatDate";
+import api from "../../../api/api";
+import useModal from "../../../composables/useModal";
+import { formatDate, formatDateDatabase } from "../../../helpers/formatDate";
 import moment from "moment";
 
-import DefaultModal from "../containers/DefaultModal.vue";
-import Loader from "../components/Loader.vue";
+import DefaultModal from "../../../containers/DefaultModal.vue";
+import Loader from "../../../components/Loader.vue";
 
-import { Edit, User, Add, Home, Excel } from "../components/Icons";
+import { Edit, User, Add, Home, Excel } from "../../../components/Icons";
 export default {
   name: "Employees",
   components: {
@@ -672,8 +672,8 @@ export default {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: #04aa6d;
-  color: white;
+  background-color: $primary;
+  color: $white;
 }
 
 /* style form employee */
@@ -713,8 +713,8 @@ export default {
     }
   }
   button {
-    background-color: #04aa6d;
-    color: white;
+    background-color: $primary;
+    color: $white;
     border: none;
     cursor: pointer;
     padding: 6px;
@@ -729,9 +729,9 @@ export default {
   margin: 10px;
 
   button {
-    background-color: white;
-    color: #04aa6d;
-    border: 1px solid #04aa6d;
+    background-color: $white;
+    color: $primary;
+    border: 1px solid $primary;
     cursor: pointer;
     padding: 6px;
     border-radius: 5px;
@@ -740,8 +740,8 @@ export default {
     justify-content: center;
 
     &:hover {
-      background-color: #04aa6d;
-      color: white;
+      background-color: $primary;
+      color: $white;
       transition: 0.2s ease-in-out;
     }
 
@@ -785,9 +785,9 @@ export default {
 }
 
 .btn-outline {
-  background-color: white;
-  color: #04aa6d;
-  border: 1px solid #04aa6d;
+  background-color: $white;
+  color: $primary;
+  border: 1px solid $primary;
   cursor: pointer;
   padding: 6px;
   border-radius: 5px;
@@ -796,8 +796,8 @@ export default {
   justify-content: center;
 
   &:hover {
-    background-color: #04aa6d;
-    color: white;
+    background-color: $primary;
+    color: $white;
     transition: 0.2s ease-in-out;
   }
 }

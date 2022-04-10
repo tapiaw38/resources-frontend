@@ -1,0 +1,29 @@
+$primary: #2FA4FF;
+$secondary: #00FFDD;
+$white: #fff;
+$black: #000;
+$warning: #f24c40;
+$success: #4caf50;
+$info: #00bcd4;
+$danger: #f44336;
+
+@mixin grid($filas) {
+  display: grid;
+  grid-template-columns: repeat($filas, 1fr);
+}
+@mixin panel {
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  left: 8%;
+  width: 18%;
+  height: 100vh;
+  padding: 0 0 0 0.5em;
+  padding-bottom: 7%;
+}
+@mixin flex {
+  display: flex;
+  align-items: center;
+}

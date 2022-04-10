@@ -19,6 +19,31 @@
         </option>
       </select>
     </div>
+    <div class="card-edit">
+      <button class="btn btn-primary" @click="togglePicker">
+        <edit></edit>
+        Editar color
+      </button>
+
+      <button
+        v-if="showPicker"
+        class="btn ml color-primary"
+        @click="editCardColor(1)"
+      >
+        <arrow-rigth></arrow-rigth>
+      </button>
+      <div class="color-picker" v-if="showPicker">
+        <ColorPicker
+          theme="light"
+          :color="color"
+          :sucker-hide="false"
+          :sucker-canvas="suckerCanvas"
+          :sucker-area="suckerArea"
+          @changeColor="changeColor"
+          @openSucker="openSucker"
+        />
+      </div>
+    </div>
     <div :class="{ loading: loader }">
       <loader v-show="loader"></loader>
     </div>
@@ -34,76 +59,13 @@
             v-for="work in work_journal"
             :key="work.id"
           >
-            <table class="detail">
-              <tr>
-                <th>{{ employee.workplace.code }}</th>
-                <th>{{ employee.work_number }}</th>
-                <th>{{ work.id }}</th>
-              </tr>
-            </table>
-            <table class="date">
-              <tr>
-                <th>
-                  {{ months.find((m) => m.value === monthSelected).text }}
-                </th>
-                <th>2022</th>
-                <th>Quincena</th>
-              </tr>
-            </table>
-            <table class="name">
-              <tr>
-                <th>Nombre y Apellido</th>
-              </tr>
-              <tr>
-                <td>{{ employee.last_name }} {{ employee.first_name }}</td>
-              </tr>
-            </table>
-            <table class="header">
-              <tr>
-                <th>Dia</th>
-                <th>Manana</th>
-                <th>Tarde</th>
-                <th>Noche</th>
-              </tr>
-            </table>
-            <table class="customers">
-              <tr>
-                <th></th>
-                <th>Entrada</th>
-                <th>Salida</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-              </tr>
-              <template v-for="(day, index) in work.day_start" :key="index">
-                <tr>
-                  <td>{{ day }}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </template>
-            </table>
-            <table class="footer">
-              <tr>
-                <th>Dias</th>
-                <th>Horas</th>
-                <th>tardanzas</th>
-                <th>Faltas</th>
-                <th>Hs Extras</th>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </table>
+            <card
+              :employee="employee"
+              :work="work"
+              :months="months"
+              :monthSelected="monthSelected"
+              :cardColor="cardColor"
+            />
           </div>
         </div>
       </template>
@@ -119,16 +81,23 @@
 import { ref, onMounted, computed, watch } from "vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import api from "../api/api";
+import { ColorPicker } from "vue-color-kit";
+import "vue-color-kit/dist/vue-color-kit.css";
 
-import Loader from "../components/Loader.vue";
+import api from "../../../api/api";
 
-import { Pdf } from "../components/Icons";
+import Card from "../components/Card.vue";
+import Loader from "../../../components/Loader.vue";
+import { Pdf, Edit, ArrowRigth } from "../../../components/Icons";
 export default {
   name: "Home",
   components: {
+    Card,
     Loader,
     Pdf,
+    Edit,
+    ArrowRigth,
+    ColorPicker,
   },
   setup() {
     let months = ref([
@@ -167,6 +136,33 @@ export default {
     let loader = ref(false);
     let typeSelected = ref(2);
     let employeeTypes = ref([]);
+    let cards = ref([]);
+
+    // color picker
+    let color = ref("#59c7f9");
+    let suckerCanvas = ref(null);
+    let suckerArea = ref([]);
+    let isSucking = ref(false);
+    let showPicker = ref(false);
+
+    const changeColor = (c) => {
+      const { r, g, b, a } = c.rgba;
+      color.value = `rgba(${r}, ${g}, ${b}, ${a})`;
+    };
+
+    const openSucker = (isOpen) => {
+      if (isOpen) {
+        // ... canvas be created
+        // this.suckerCanvas = canvas
+        // this.suckerArea = [x1, y1, x2, y2]
+      } else {
+        // this.suckerCanvas && this.suckerCanvas.remove
+      }
+    };
+
+    const togglePicker = () => {
+      showPicker.value = !showPicker.value;
+    };
 
     const getOptionType = computed(() => {
       return employeeTypes.value.map((type) => {
@@ -190,6 +186,30 @@ export default {
       const { data } = await api.get("types");
       employeeTypes.value = data;
     };
+
+    const fetchDataCard = async () => {
+      const { data } = await api.get("cards");
+      cards.value = data;
+    };
+
+    const editCardColor = async (id) => {
+      let card = {
+        width: 0,
+        height: 0,
+        color: color.value,
+      };
+
+      const { data } = await api.put(`cards/update/${id}`, card);
+      cards.value[0] = data;
+      togglePicker();
+    };
+
+    const cardColor = computed(() => {
+      if (cards.value.length > 0) {
+        return cards.value.find((card) => card.id === 1).color;
+      }
+      return "black";
+    });
 
     watch(typeSelected, async () => {
       loader.value = true;
@@ -276,6 +296,7 @@ export default {
     onMounted(() => {
       fetchDataEmployee();
       fetchDataEmployeeTypes();
+      fetchDataCard();
     });
 
     return {
@@ -290,6 +311,16 @@ export default {
       loader,
       typeSelected,
       getOptionType,
+      cardColor,
+      color,
+      changeColor,
+      openSucker,
+      suckerCanvas,
+      suckerArea,
+      isSucking,
+      showPicker,
+      togglePicker,
+      editCardColor,
     };
   },
 };
@@ -317,160 +348,6 @@ export default {
   align-items: center;
   border: 2px solid #ccc;
   padding: 5px;
-}
-.detail {
-  border-collapse: collapse;
-  border: 1px solid #04aa6d;
-  width: 336px;
-}
-
-.detail th:nth-child(1) {
-  border-bottom: 1px solid #04aa6d;
-  font-size: 38px;
-}
-.detail th:nth-child(2) {
-  border-right: 1px solid #04aa6d;
-  font-size: 38px;
-}
-
-.detail th:nth-child(3) {
-  min-width: 20px;
-  font-size: 40px;
-  float: right;
-  margin-right: 25px;
-}
-
-.date {
-  border-collapse: collapse;
-  border-bottom: 1px solid #04aa6d;
-  border-left: 1px solid #04aa6d;
-  border-right: 1px solid #04aa6d;
-  width: 336px;
-}
-
-.date th:nth-child(2) {
-  font-size: 20px;
-  min-width: 77px;
-}
-
-.date th:nth-child(3) {
-  font-size: 12px;
-  float: right;
-  padding: 10px;
-}
-
-.name {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  width: 100%;
-  padding: 5px;
-}
-
-.name th,
-td {
-  text-align: left;
-  font-weight: bold;
-  font-size: 16px;
-  text-align: left;
-}
-
-.name td {
-  border: none;
-}
-
-.footer {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  font-size: 12px;
-  min-width: 337px;
-}
-
-.footer th {
-  text-align: center;
-  background-color: #04aa6d;
-  color: white;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.footer th,
-td {
-  border: 1px solid #ddd;
-  padding-bottom: 8px;
-  padding-top: 8px;
-  min-height: 40px;
-}
-
-.footer td {
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-.header {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-.header th {
-  text-align: center;
-  background-color: #04aa6d;
-  color: white;
-  min-height: 20px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.header th:first-child {
-  min-width: 46px;
-}
-
-.header th:nth-child(2) {
-  min-width: 94px;
-}
-
-.header th:nth-child(3) {
-  min-width: 94px;
-}
-
-.header th:nth-child(4) {
-  min-width: 94px;
-}
-
-.customers {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  font-size: 10px;
-  max-width: 120px;
-  height: 150px;
-}
-.customers th {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  text-align: center;
-  background-color: #04aa6d;
-  color: white;
-  min-width: 45px;
-}
-
-.customers td:first-child {
-  text-align: center;
-}
-.customers td,
-.customers th {
-  border: 1px solid #ddd;
-  padding-bottom: 8px;
-  padding-top: 8px;
-}
-
-.customers tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.customers tr:hover {
-  background-color: #ddd;
 }
 
 /* container tools */
@@ -518,22 +395,34 @@ td {
 }
 
 .btn-download {
-  background-color: #04aa6d;
+  background-color: $info;
   color: white;
   border: none;
   border-radius: 5px;
   padding: 10px;
   margin-left: 20px;
   cursor: pointer;
-  border: 1px solid #04aa6d;
+  border: 1px solid $info;
   font-size: 12px;
   font-weight: bold;
 
   &:hover {
     background-color: white;
-    color: #04aa6d;
+    color: $info;
     transition: 0.5s ease-in-out;
     font-weight: bold;
   }
+}
+
+.card-edit {
+  display: block;
+  text-align: left;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+.color-picker {
+  margin-top: 5px;
+  position: absolute;
 }
 </style>

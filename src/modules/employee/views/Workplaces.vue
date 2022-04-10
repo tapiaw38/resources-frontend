@@ -137,13 +137,13 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import api from "../api/api";
-import useModal from "../composables/useModal";
+import api from "../../../api/api";
+import useModal from "../../../composables/useModal";
 
-import DefaultModal from "../containers/DefaultModal.vue";
-import Loader from "../components/Loader.vue";
+import DefaultModal from "../../../containers/DefaultModal.vue";
+import Loader from "../../../components/Loader.vue";
 
-import { Edit, Delete, Clipboard, Home, Add } from "../components/Icons";
+import { Edit, Delete, Clipboard, Home, Add } from "../../../components/Icons";
 export default {
   name: "Workplaces",
   components: {
@@ -286,12 +286,12 @@ export default {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: #04aa6d;
+  background-color: $primary;
   color: white;
 }
 
 .btn-edit {
-  background-color: #04aa6d;
+  background-color: $primary;
   color: white;
   border: none;
   cursor: pointer;
@@ -300,7 +300,7 @@ export default {
 }
 
 .btn-delete {
-  background-color: #f44336;
+  background-color: $danger;
   color: white;
   border: none;
   cursor: pointer;
@@ -337,7 +337,7 @@ export default {
     }
   }
   button {
-    background-color: #04aa6d;
+    background-color: $primary;
     color: white;
     border: none;
     cursor: pointer;
@@ -355,8 +355,8 @@ export default {
   .btn-outline,
   button {
     background-color: white;
-    color: #04aa6d;
-    border: 1px solid #04aa6d;
+    color: $primary;
+    border: 1px solid $primary;
     cursor: pointer;
     padding: 6px;
     border-radius: 5px;
@@ -365,7 +365,7 @@ export default {
     justify-content: center;
 
     &:hover {
-      background-color: #04aa6d;
+      background-color: $primary;
       color: white;
       transition: 0.2s ease-in-out;
     }

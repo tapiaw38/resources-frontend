@@ -25,38 +25,38 @@ export default {
 
 .topnav a {
   float: left;
-  color: #f2f2f2;
+  color: $white;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 14px;
 }
 
 .topnav a:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: $white;
+  color: $black;
 }
 
 .topnav a.active {
-  background-color: #04aa6d;
-  color: white;
+  background-color: $primary;
+  color: $white;
 }
 
 .user-content {
   float: right;
 
   button {
-    background-color: #04aa6d;
-    color: white;
+    background-color: $primary;
+    color: $white;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: 17px;
+    font-size: 14px;
     border: none;
     cursor: pointer;
 
     &:hover {
-      background-color: white;
-      color: #04aa6d;
+      background-color: $white;
+      color: $primary;
       transition: 0.5s ease-in-out;
     }
   }
