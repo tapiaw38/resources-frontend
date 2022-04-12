@@ -50,9 +50,7 @@
 
     <div v-if="searchEmployee.length > 0">
       <template v-for="employee in searchEmployee" :key="employee.id">
-        <button class="btn-download" @click="downloadCardEmployee(employee.id)">
-          <pdf></pdf> {{ employee.last_name }} {{ employee.first_name }}
-        </button>
+        <h2 class="title-card">{{ employee.last_name }} {{ employee.first_name }}</h2>
         <div class="container-target" :id="'target-' + employee.id">
           <div
             class="container-employee target"
@@ -82,19 +80,18 @@ import { ref, onMounted, computed, watch } from "vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { ColorPicker } from "vue-color-kit";
-import "vue-color-kit/dist/vue-color-kit.css";
+//import "vue-color-kit/dist/vue-color-kit.css";
 
 import api from "../../../api/api";
 
 import Card from "../components/Card.vue";
 import Loader from "../../../components/Loader.vue";
-import { Pdf, Edit, ArrowRigth } from "../../../components/Icons";
+import { Edit, ArrowRigth } from "../../../components/Icons";
 export default {
   name: "Home",
   components: {
     Card,
     Loader,
-    Pdf,
     Edit,
     ArrowRigth,
     ColorPicker,
@@ -327,6 +324,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../../node_modules/vue-color-kit/dist/vue-color-kit.css";
+
+.title-card {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: $primary;
+}
 .container-pdf {
   max-width: 740px;
   margin: 0 auto;
@@ -424,5 +429,6 @@ export default {
 .color-picker {
   margin-top: 5px;
   position: absolute;
+  z-index: 2;
 }
 </style>

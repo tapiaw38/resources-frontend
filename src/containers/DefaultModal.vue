@@ -55,7 +55,7 @@ export default {
 }
 .modal-header {
   position: relative;
-  color: #04aa6d;
+  color: $primary;
   justify-content: space-between;
 }
 .modal-footer {
@@ -75,7 +75,7 @@ export default {
   padding: 10px;
   cursor: pointer;
   font-weight: bold;
-  color: #04aa6d;
+  color: $primary;
   background: transparent;
 }
 </style>

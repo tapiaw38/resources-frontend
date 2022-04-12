@@ -1,12 +1,12 @@
 export default {
   component: () =>
-    import(/* webpackChunkName: "CardLayout" */ "../layouts/CardLayout"),
+    import(/* webpackChunkName: "cardLayout" */ "../layouts/CardLayout"),
   children: [
     {
-      path: "/targets",
-      name: "targets",
+      path: "",
+      name: "cards",
       component: () =>
-        import(/* webpackChunkName: "targets" */ "../views/Targets.vue"),
+        import(/* webpackChunkName: "cardEdit" */ "../views/CardEdit.vue"),
     },
   ],
 };

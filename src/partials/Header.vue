@@ -4,7 +4,7 @@
     <router-link :to="{ name: 'employees' }">Empleados</router-link>
     <router-link :to="{ name: 'trainees' }">Becados</router-link>
     <router-link :to="{ name: 'workplaces' }">Areas</router-link>
-    <router-link :to="{ name: 'targets' }">Imprimir tarjetas</router-link>
+    <router-link :to="{ name: 'cards' }">Ver y editar tarjetas</router-link>
     <div class="user-content">
       <button class="login">Iniciar Sesion</button>
     </div>

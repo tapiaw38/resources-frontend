@@ -36,6 +36,8 @@
             <th>Codigo</th>
             <th>N Emple.</th>
             <th></th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -76,9 +78,22 @@
                 <button @click="selectEmployee(employee)" class="btn-outline">
                   <edit></edit>
                 </button>
-                <button v-if="false" class="btn-delete">
+              </td>
+              <td>
+                <button
+                  @click="selectDeleteEmployee(employee)"
+                  class="btn-outline"
+                >
                   <delete></delete>
                 </button>
+              </td>
+              <td>
+                <router-link
+                  class="btn-outline"
+                  :to="{ name: 'employee-card', params: { id: employee.id } }"
+                >
+                  <card></card>
+                </router-link>
               </td>
             </tr>
           </template>
@@ -312,6 +327,27 @@
         <br />
       </template>
     </default-modal>
+    <!-- delete employee modal -->
+    <default-modal v-if="deleteIsModalVisible" @close="deleteCloseModal">
+      <template v-slot:header>
+        <h3>Eliminar Empleado</h3>
+      </template>
+      <template v-slot:body>
+        <div class="delete-content">
+          <h4>Estas seguro de eliminar este empleado?</h4>
+          <p>
+            Esta accion no se puede deshacer, si lo haces se eliminara el
+            empleado y todos sus datos.
+          </p>
+          <button type="button" class="btn btn-danger" @click="deleteEmployee">
+            Eliminar
+          </button>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <br />
+      </template>
+    </default-modal>
   </div>
 </template>
 
@@ -325,7 +361,15 @@ import moment from "moment";
 import DefaultModal from "../../../containers/DefaultModal.vue";
 import Loader from "../../../components/Loader.vue";
 
-import { Edit, User, Add, Home, Excel } from "../../../components/Icons";
+import {
+  Edit,
+  User,
+  Add,
+  Home,
+  Excel,
+  Card,
+  Delete,
+} from "../../../components/Icons";
 export default {
   name: "Employees",
   components: {
@@ -336,6 +380,8 @@ export default {
     Add,
     Home,
     Excel,
+    Card,
+    Delete,
   },
   setup() {
     const { isModalVisible, showModal, closeModal } = useModal();
@@ -343,6 +389,11 @@ export default {
       isModalVisible: createIsModalVisible,
       showModal: createShowModal,
       closeModal: createCloseModal,
+    } = useModal();
+    const {
+      isModalVisible: deleteIsModalVisible,
+      showModal: deleteShowModal,
+      closeModal: deleteCloseModal,
     } = useModal();
 
     let employees = ref([]);
@@ -546,6 +597,28 @@ export default {
       }
     };
 
+    // delete employee
+
+    let employeeDelete = ref(null);
+
+    const deleteEmployee = async () => {
+      try {
+        await api.delete(`/employees/delete/${employeeDelete.value.id}`);
+        const idx = employees.value
+          .map((e) => e.id)
+          .indexOf(employeeDelete.value.id);
+        employees.value.splice(idx, 1);
+        deleteCloseModal();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const selectDeleteEmployee = (id) => {
+      employeeDelete.value = id;
+      deleteShowModal();
+    };
+
     // convert json to excel
 
     let xlsx = require("json-as-xlsx");
@@ -635,6 +708,11 @@ export default {
       createCloseModal,
       createShowModal,
       createIsModalVisible,
+      deleteEmployee,
+      deleteCloseModal,
+      deleteIsModalVisible,
+      deleteShowModal,
+      selectDeleteEmployee,
     };
   },
 };
@@ -807,5 +885,9 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 10%;
+}
+
+.delete-content {
+  width: 400px;
 }
 </style>
