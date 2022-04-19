@@ -1,61 +1,51 @@
-import api from "../../../../api";
+import api from "../../../../api/api";
 
 // actions employees
-export const loadEmloyeesByType = ({ commit }, type) => {
-  const { data } = api.get(`/employees/get_by_type/${type}`);
+export const loadEmloyeesByType = async ({ commit }, type = 2) => {
+  const { data } = await api.get(`/employees/get_by_type/${type}`);
   commit("setEmployees", data);
 };
 
-export const loadTrainnesByType = ({ commit }, type) => {
-  const { data } = api.get(`/employees/get_by_type/${type}`);
+export const loadTrainnesByType = async ({ commit }, type = 1) => {
+  const { data } = await api.get(`/employees/get_by_type/${type}`);
   commit("setTrainnes", data);
 };
 
-export const loadPermanentByType = ({ commit }, type) => {
-  const { data } = api.get(`/employees/get_by_type/${type}`);
+export const loadPermanentByType = async ({ commit }, type = 3) => {
+  const data = await api.get(`/employees/get_by_type/${type}`);
   commit("setPermanents", data);
 };
 
-export const loadEmployeeById = ({ commit }, id) => {
-  const { data } = api.get(`/employees/get_by_id/${id}`);
+export const loadEmployeeById = async ({ commit }, id) => {
+  const { data } = await api.get(`/employees/get_by_id/${id}`);
   commit("setEmployee", data);
 };
 
-export const addEmployee = ({ commit }, employee) => {
-  const { data } = api.post("/employees/create", employee);
+export const addEmployee = async ({ commit }, employee) => {
+  const { data } = await api.post("/employees/create", employee);
   commit("addEmployee", data);
 };
 
-export const updateEmployee = ({ commit }, { employee, type }) => {
-  const { data } = api.put(`/employees/update/${employee.id}`, employee);
-  if (type === "1") {
-    commit("updateTrainnes", data);
-    return;
-  }
-  if (type === "2") {
-    commit("updateEmployees", data);
-    return;
-  }
-  if (type === "3") {
-    commit("updatePermanent", data);
-    return;
-  }
-  return;
+export const updateEmployee = async ({ commit }, employee) => {
+  const { data } = await api.put(`/employees/update/${employee.id}`, employee);
+  commit("updateEmployee", data);
 };
 
-export const deleteEmployee = ({ commit }, { employee, type }) => {
-  const { data } = api.delete(`/employees/delete/${employee.id}`);
-  if (type === "1") {
-    commit("deleteTrainnes", data);
-    return;
-  }
-  if (type === "2") {
-    commit("deleteEmployees", data);
-    return;
-  }
-  if (type === "3") {
-    commit("deletePermanent", data);
-    return;
-  }
-  return;
+export const deleteEmployee = async ({ commit }, employee) => {
+  const { data } = await api.delete(`/employees/delete/${employee.id}`);
+  commit("deleteEmployee", data);
+};
+
+// actions workplaces
+
+export const loadWorkplaces = async ({ commit }) => {
+  const { data } = await api.get("/workplaces/all");
+  commit("setWorkplaces", data);
+};
+
+// actions employeeTypes
+
+export const loadEmployeeTypes = async ({ commit }) => {
+  const { data } = await api.get("/types/all");
+  commit("setEmployeeTypes", data);
 };

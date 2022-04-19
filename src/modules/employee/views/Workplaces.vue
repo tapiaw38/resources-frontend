@@ -181,7 +181,7 @@ export default {
     const enableEdit = ref(false);
 
     const fetchData = async () => {
-      const { data } = await api.get("workplaces");
+      const { data } = await api.get("workplaces/all");
       workplaces.value = data;
     };
 

@@ -21,7 +21,7 @@
         <div class="container-target" :id="'target-' + employee.id">
           <div
             class="container-employee target"
-            v-for="work in work_journal"
+            v-for="work in journal"
             :key="work.id"
           >
             <card
@@ -44,12 +44,17 @@
 <script>
 // @ is an alias to /src
 import { ref, onMounted, computed } from "vue";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-//import "vue-color-kit/dist/vue-color-kit.css";
 
+// utilities
 import api from "../../../api/api";
+import { months } from "../../../helpers/months";
+import { journal } from "../../../helpers/journal";
 
+// composables
+import useConvertToPDF from "../../../composables/useConvertToPDF";
+import useEmployee from "../composables/useEmployee";
+
+// icons
 import Card from "../../../modules/card/components/Card.vue";
 import Loader from "../../../components/Loader.vue";
 import { Pdf, ArrowLeft } from "../../../components/Icons";
@@ -68,53 +73,16 @@ export default {
     ArrowLeft,
   },
   setup(props) {
-    let months = ref([
-      { text: "Enero", value: 1 },
-      { text: "Febrero", value: 2 },
-      { text: "Marzo", value: 3 },
-      { text: "Abril", value: 4 },
-      { text: "Mayo", value: 5 },
-      { text: "Junio", value: 6 },
-      { text: "Julio", value: 7 },
-      { text: "Agosto", value: 8 },
-      { text: "Septiembre", value: 9 },
-      { text: "Octubre", value: 10 },
-      { text: "Noviembre", value: 11 },
-      { text: "Diciembre", value: 12 },
-    ]);
+    const { loaderToPDF, downloadPDF } = useConvertToPDF();
+    const { employee, searchById } = useEmployee();
 
     let monthSelected = ref(new Date().getMonth() + 2);
-
-    let work_journal = [
-      {
-        id: 1,
-        day_start: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      },
-      {
-        id: 2,
-        day_start: [
-          16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-        ],
-      },
-    ];
-
-    let loader = ref(false);
     let cards = ref([]);
-    let employee = ref(null);
 
     // fetch data
 
-    const fetchEmployeeById = async () => {
-      try {
-        const { data } = await api.get(`/employees/get_by_id/${props.id}`);
-        employee.value = data;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     const fetchDataCard = async () => {
-      const { data } = await api.get("cards");
+      const { data } = await api.get("cards/all");
       cards.value = data;
     };
 
@@ -125,38 +93,19 @@ export default {
       return "black";
     });
 
-    // Convert to PDF whith jsPDF and html2canvas
-    const downloadCardEmployee = async (id) => {
-      loader.value = true;
-      const target = await document.getElementById(`target-${id}`);
-      const pdf = new jsPDF("l", "mm", "legal");
-      const options = {
-        background: "#fff",
-        scale: 0.9,
-        width: target.clientWidth,
-        height: target.clientHeight,
-      };
-      html2canvas(target, options).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        pdf.addImage(imgData, "PNG", 0, 0);
-        pdf.save("empleado.pdf");
-        loader.value = false;
-      });
-    };
-
     // mounted component
     onMounted(() => {
-      fetchEmployeeById();
+      searchById(props.id);
       fetchDataCard();
     });
 
     return {
       employee,
-      work_journal,
-      downloadCardEmployee,
+      journal,
+      downloadCardEmployee: downloadPDF,
       months,
       monthSelected,
-      loader,
+      loader: loaderToPDF,
       cardColor,
     };
   },

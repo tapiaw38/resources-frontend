@@ -1,6 +1,10 @@
+// getters employees
+
 export const getEmployees = (state) => state.employees;
 export const getTrainees = (state) => state.trainees;
 export const getPermanents = (state) => state.permanents;
+
+export const getEmployee = (state) => state.employee;
 
 export const getEmployeesByTerm =
   (state) =>
@@ -64,3 +68,9 @@ export const getPermanentById =
     if (!permanent) return;
     return { ...permanent };
   };
+
+// getters workplaces
+export const getWorkplaces = (state) => state.workplaces;
+
+// getters employeeTypes
+export const getEmployeeTypes = (state) => state.employeeTypes;

@@ -14,6 +14,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../node_modules/vue-color-kit/dist/vue-color-kit.css";
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

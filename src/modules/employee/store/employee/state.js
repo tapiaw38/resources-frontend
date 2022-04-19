@@ -1,9 +1,10 @@
 export default () => ({
   isLoading: true,
-  employees: localStorage.getItem("employees") || [],
-  trainees: localStorage.getItem("trainees") || [],
-  permanents: localStorage.getItem("permanents") || [],
+  employees: [],
+  trainees: [],
+  permanents: [],
   employee: null,
-  allEmployees: localStorage.getItem("allEmployees") || [],
+  allEmployees: [],
   workplaces: [],
+  employeeTypes: [],
 });

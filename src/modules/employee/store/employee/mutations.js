@@ -2,25 +2,21 @@
 
 export const setEmployees = (state, employees) => {
   state.employees = employees;
-  localStorage.setItem("employees", JSON.stringify(employees));
   state.isLoading = false;
 };
 
-export const setTrainees = (state, trainees) => {
+export const setTrainnes = (state, trainees) => {
   state.trainees = trainees;
-  localStorage.setItem("trainees", JSON.stringify(trainees));
   state.isLoading = false;
 };
 
 export const setPermanents = (state, permanents) => {
   state.permanents = permanents;
-  localStorage.setItem("permanent", JSON.stringify(permanents));
   state.isLoading = false;
 };
 
 export const setAllEmployees = (state, employees) => {
   state.allEmployees = employees;
-  localStorage.setItem("allEmployees", JSON.stringify(employees));
   state.isLoading = false;
 };
 
@@ -30,8 +26,50 @@ export const setEmployee = (state, employee) => {
 };
 
 export const addEmployee = (state, employee) => {
-  state.employees = [employee, ...state.employees];
-  state.isLoading = false;
+  if (employee.employee_type === 1) {
+    employee.employee_type = state.employeeTypes.find(
+      (e) => e.id === employee.employee_type
+    );
+    if (employee.workplace) {
+      employee.workplace = state.workplaces.find(
+        (w) => w.id == employee.workplace
+      );
+    }
+    state.trainees = [...state.trainees, employee];
+    state.isLoading = false;
+
+    return;
+  }
+
+  if (employee.employee_type === 2) {
+    employee.employee_type = state.employeeTypes.find(
+      (e) => e.id === employee.employee_type
+    );
+    if (employee.workplace) {
+      employee.workplace = state.workplaces.find(
+        (w) => w.id == employee.workplace
+      );
+    }
+    state.employees = [...state.employees, employee];
+    state.isLoading = false;
+
+    return;
+  }
+
+  if (employee.employee_type === 3) {
+    employee.employee_type = state.employeeTypes.find(
+      (e) => e.id === employee.employee_type
+    );
+    if (employee.workplace) {
+      employee.workplace = state.workplaces.find(
+        (w) => w.id == employee.workplace
+      );
+    }
+    state.permanents = [...state.permanents, employee];
+    state.isLoading = false;
+
+    return;
+  }
 };
 
 export const updateEmployee = (state, employee) => {
@@ -46,26 +84,14 @@ export const deleteEmployee = (state, employee) => {
   state.isLoading = false;
 };
 
-export const updateTrainnes = (state, trainees) => {
-  const index = state.trainees.findIndex((e) => e.id === trainees.id);
-  state.trainees[index] = trainees;
+// mutations workplaces
+export const setWorkplaces = (state, workplaces) => {
+  state.workplaces = workplaces;
   state.isLoading = false;
 };
 
-export const deleteTrainnes = (state, trainees) => {
-  const index = state.trainees.findIndex((e) => e.id === trainees.id);
-  state.trainees.splice(index, 1);
-  state.isLoading = false;
-};
-
-export const updatePermanent = (state, permanent) => {
-  const index = state.permanent.findIndex((e) => e.id === permanent.id);
-  state.permanent[index] = permanent;
-  state.isLoading = false;
-};
-
-export const deletePermanent = (state, permanent) => {
-  const index = state.permanent.findIndex((e) => e.id === permanent.id);
-  state.permanent.splice(index, 1);
+// mutations employeeTypes
+export const setEmployeeTypes = (state, employeeTypes) => {
+  state.employeeTypes = employeeTypes;
   state.isLoading = false;
 };

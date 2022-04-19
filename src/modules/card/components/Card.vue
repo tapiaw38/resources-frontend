@@ -5,6 +5,7 @@
         <th>{{ employee.workplace.code }}</th>
         <th>{{ employee.work_number }}</th>
         <th>{{ work.id }}</th>
+        <th v-if="employee.employee_type.id == 1">B</th>
       </tr>
     </table>
     <table class="date">
@@ -21,7 +22,19 @@
         <th>Nombre y Apellido</th>
       </tr>
       <tr>
-        <td>{{ employee.last_name }} {{ employee.first_name }}</td>
+        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+      </tr>
+      <tr v-if="employee.document_number">
+        <td>
+          {{
+            employee.document_number.length > 8
+              ? employee.document_number
+                  .replace(/\-/g, "")
+                  .replace(/\./g, "")
+                  .slice(2, -1)
+              : employee.document_number
+          }}
+        </td>
       </tr>
     </table>
     <table class="header">
@@ -101,12 +114,6 @@ export default {
       default: "black",
     },
   },
-  setup() {
-
-    return {
-
-    };
-  },
 };
 </script>
 
@@ -126,7 +133,8 @@ export default {
   font-size: 38px;
 }
 
-.detail th:nth-child(3) {
+.detail th:nth-child(3),
+.detail th:nth-child(4) {
   min-width: 20px;
   font-size: 40px;
   float: right;
@@ -173,6 +181,16 @@ td {
 
 .name td {
   border: none;
+}
+
+.name tr:nth-child(2) {
+  max-width: 225px;
+}
+
+.name tr:nth-child(3) td:nth-child(1) {
+  float: right;
+  padding: 0;
+  margin-top: -27px;
 }
 
 .footer {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const coeadminApi = axios.create({
-  baseURL: "http://localhost:8000/api/v1/",
+  baseURL: "http://localhost:8000/",
   //baseURL: "https://resources-api-heroku.herokuapp.com/api/v1/",
 });
 

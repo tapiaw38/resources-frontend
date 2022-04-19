@@ -50,11 +50,13 @@
 
     <div v-if="searchEmployee.length > 0">
       <template v-for="employee in searchEmployee" :key="employee.id">
-        <h2 class="title-card">{{ employee.last_name }} {{ employee.first_name }}</h2>
+        <h2 class="title-card">
+          {{ employee.last_name }} {{ employee.first_name }}
+        </h2>
         <div class="container-target" :id="'target-' + employee.id">
           <div
             class="container-employee target"
-            v-for="work in work_journal"
+            v-for="work in journal"
             :key="work.id"
           >
             <card
@@ -77,13 +79,18 @@
 <script>
 // @ is an alias to /src
 import { ref, onMounted, computed, watch } from "vue";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { ColorPicker } from "vue-color-kit";
 //import "vue-color-kit/dist/vue-color-kit.css";
 
+// utilities
 import api from "../../../api/api";
+import { months } from "../../../helpers/months";
+import { journal } from "../../../helpers/journal";
 
+// composables
+import useColorPicker from "../../../composables/useColorPicker";
+
+// icons
 import Card from "../components/Card.vue";
 import Loader from "../../../components/Loader.vue";
 import { Edit, ArrowRigth } from "../../../components/Icons";
@@ -97,69 +104,25 @@ export default {
     ColorPicker,
   },
   setup() {
-    let months = ref([
-      { text: "Enero", value: 1 },
-      { text: "Febrero", value: 2 },
-      { text: "Marzo", value: 3 },
-      { text: "Abril", value: 4 },
-      { text: "Mayo", value: 5 },
-      { text: "Junio", value: 6 },
-      { text: "Julio", value: 7 },
-      { text: "Agosto", value: 8 },
-      { text: "Septiembre", value: 9 },
-      { text: "Octubre", value: 10 },
-      { text: "Noviembre", value: 11 },
-      { text: "Diciembre", value: 12 },
-    ]);
+    const {
+      color,
+      suckerCanvas,
+      suckerArea,
+      isSucking,
+      showPicker,
+      changeColor,
+      openSucker,
+      togglePicker,
+    } = useColorPicker();
 
     let monthSelected = ref(new Date().getMonth() + 2);
-
     let employees = ref([]);
-
-    let work_journal = [
-      {
-        id: 1,
-        day_start: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      },
-      {
-        id: 2,
-        day_start: [
-          16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-        ],
-      },
-    ];
 
     let search = ref("");
     let loader = ref(false);
     let typeSelected = ref(2);
     let employeeTypes = ref([]);
     let cards = ref([]);
-
-    // color picker
-    let color = ref("#59c7f9");
-    let suckerCanvas = ref(null);
-    let suckerArea = ref([]);
-    let isSucking = ref(false);
-    let showPicker = ref(false);
-
-    const changeColor = (c) => {
-      const { r, g, b, a } = c.rgba;
-      color.value = `rgba(${r}, ${g}, ${b}, ${a})`;
-    };
-
-    const openSucker = (isOpen) => {
-      if (isOpen) {
-        // ... canvas be created
-        // this.suckerCanvas = canvas
-        // this.suckerArea = [x1, y1, x2, y2]
-      } else {
-        // this.suckerCanvas && this.suckerCanvas.remove
-      }
-    };
-
-    const togglePicker = () => {
-      showPicker.value = !showPicker.value;
-    };
 
     const getOptionType = computed(() => {
       return employeeTypes.value.map((type) => {
@@ -180,12 +143,12 @@ export default {
     };
 
     const fetchDataEmployeeTypes = async () => {
-      const { data } = await api.get("types");
+      const { data } = await api.get("types/all");
       employeeTypes.value = data;
     };
 
     const fetchDataCard = async () => {
-      const { data } = await api.get("cards");
+      const { data } = await api.get("cards/all");
       cards.value = data;
     };
 
@@ -225,25 +188,7 @@ export default {
       })
     );
 
-    // Convert to PDF whith jsPDF and html2canvas
-    const downloadCardEmployee = async (id) => {
-      loader.value = true;
-      const target = await document.getElementById(`target-${id}`);
-      const pdf = new jsPDF("l", "mm", "legal");
-      const options = {
-        background: "#fff",
-        scale: 0.9,
-        width: target.clientWidth,
-        height: target.clientHeight,
-      };
-      html2canvas(target, options).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        pdf.addImage(imgData, "PNG", 0, 0);
-        pdf.save("empleado.pdf");
-        loader.value = false;
-      });
-    };
-
+    /*
     const overlayCanvases = (canvas) => {
       let newCanvas = document.createElement("canvas");
       let ctx = newCanvas.getContext("2d");
@@ -288,6 +233,7 @@ export default {
         console.log(error);
       }
     };
+    */
 
     // mounted component
     onMounted(() => {
@@ -300,9 +246,7 @@ export default {
       employees,
       searchEmployee,
       search,
-      work_journal,
-      downloadCardEmployee,
-      downloadAll,
+      journal,
       months,
       monthSelected,
       loader,
@@ -324,8 +268,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../node_modules/vue-color-kit/dist/vue-color-kit.css";
-
 .title-card {
   font-size: 1.5rem;
   font-weight: bold;

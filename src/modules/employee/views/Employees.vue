@@ -393,14 +393,21 @@
 
 <script>
 import { ref, onMounted, computed, watch } from "vue";
+
+// utilities
 import api from "../../../api/api";
 import useModal from "../../../composables/useModal";
 import { formatDate, formatDateDatabase } from "../../../helpers/formatDate";
 import moment from "moment";
 
+// composables
+import useEmployee from "../composables/useEmployee";
+
+// components
 import DefaultModal from "../../../containers/DefaultModal.vue";
 import Loader from "../../../components/Loader.vue";
 
+// icons
 import { Edit, User, Add, Home, Card, Delete } from "../../../components/Icons";
 export default {
   name: "Employees",
@@ -427,9 +434,13 @@ export default {
       closeModal: deleteCloseModal,
     } = useModal();
 
-    let employees = ref([]);
-    let workplaces = ref([]);
-    let employeeTypes = ref([]);
+    const {
+      employees,
+      workplaces,
+      employeeTypes,
+      createEmployee: createEmployeeHandler,
+    } = useEmployee();
+
     let employee = ref({
       id: null,
       file_code: "",
@@ -442,7 +453,7 @@ export default {
       phone: "",
       address: "",
       picture: "",
-      salary: "",
+      salary: 0,
       category: "",
       status: "",
       work_number: "",
@@ -465,8 +476,7 @@ export default {
         .filter((type) => type.value !== 1);
     });
 
-    //get employees
-
+    //get employees by term
     const searchEmployee = computed(() =>
       employees.value.filter((e) => {
         return (
@@ -476,28 +486,7 @@ export default {
       })
     );
 
-    // create employee
-
-    const createEmployee = ref({
-      file_code: "",
-      agent_number: "",
-      first_name: "",
-      last_name: "",
-      document_number: "",
-      birth_date: "",
-      date_admission: "",
-      phone: "",
-      address: "",
-      picture: "",
-      salary: 0,
-      category: 10,
-      work_number: "",
-      employee_type: 2,
-      workplace: 0,
-    });
-
-    // select employee
-
+    // select employee to update
     const selectEmployee = (e) => {
       employee.value.id = e.id;
       employee.value.file_code = e.file_code;
@@ -507,12 +496,9 @@ export default {
       employee.value.document_number = e.document_number;
       employee.value.birth_date = formatDateDatabase(e.birth_date);
       employee.value.date_admission = formatDateDatabase(e.date_admission);
-      employee.value.phone = e.phone;
-      employee.value.address = e.address;
-      employee.value.picture = e.picture;
       employee.value.salary = e.salary;
-      employee.value.category = e.category;
       employee.value.status = e.status;
+      employee.value.category = e.category;
       employee.value.work_number = e.work_number;
       employee.value.employee_type = e.employee_type ? e.employee_type.id : 0;
       employee.value.workplace = e.workplace ? e.workplace.id : 0;
@@ -577,59 +563,36 @@ export default {
       }
     };
 
-    // create employee
+    // create employee to create
+    const createEmployee = ref({
+      file_code: "",
+      agent_number: "",
+      first_name: "",
+      last_name: "",
+      document_number: "",
+      birth_date: "",
+      date_admission: "",
+      phone: "",
+      address: "",
+      picture: "",
+      salary: 0,
+      category: 10,
+      work_number: "",
+      employee_type: 2,
+      workplace: 0,
+    });
 
+    // create employee handler
     const createEmployeeAction = async () => {
-      let dataCreate = {
-        file_code: createEmployee.value.file_code,
-        agent_number: createEmployee.value.agent_number,
-        first_name: createEmployee.value.first_name,
-        last_name: createEmployee.value.last_name,
-        document_number: createEmployee.value.document_number,
-        birth_date: createEmployee.value.birth_date
-          ? moment(createEmployee.value.birth_date).add("days", 1).format()
-          : null,
-        date_admission: createEmployee.value.date_admission
-          ? moment(createEmployee.value.date_admission).add("days", 1).format()
-          : null,
-        phone: createEmployee.value.phone,
-        address: createEmployee.value.address,
-        picture: createEmployee.value.picture,
-        salary: createEmployee.value.salary,
-        category: createEmployee.value.category,
-        status: createEmployee.value.status,
-        work_number: createEmployee.value.work_number,
-        employee_type: createEmployee.value.employee_type,
-        workplace: createEmployee.value.workplace,
-      };
+      createEmployee.value.birth_date = createEmployee.value.birth_date
+        ? moment(createEmployee.value.birth_date).add("days", 1).format()
+        : null;
+      createEmployee.value.date_admission = createEmployee.value.date_admission
+        ? moment(createEmployee.value.date_admission).add("days", 1).format()
+        : null;
 
-      try {
-        const { data } = await api.post(`/employees/create`, dataCreate);
-        employees.value.push({
-          id: data.id,
-          file_code: data.file_code,
-          agent_number: data.agent_number,
-          first_name: data.first_name,
-          last_name: data.last_name,
-          document_number: data.document_number,
-          birth_date: data.birth_date,
-          date_admission: data.date_admission,
-          phone: data.phone,
-          address: data.address,
-          picture: data.picture,
-          salary: data.salary,
-          category: data.category,
-          status: data.status,
-          work_number: data.work_number,
-          employee_type: employeeTypes.value.find(
-            (e) => e.id === data.employee_type
-          ),
-          workplace: workplaces.value.find((w) => w.id == data.workplace),
-        });
-        createCloseModal();
-      } catch (error) {
-        console.log(error);
-      }
+      createEmployeeHandler(createEmployee.value);
+      createCloseModal();
     };
 
     // delete employee
@@ -654,34 +617,12 @@ export default {
       deleteShowModal();
     };
 
-    // fetch employees and workplaces
-
-    const fetchDataEmployees = async () => {
-      const { data } = await api.get(
-        `employees/get_by_type/${typeSelected.value}`
-      );
-      employees.value = data;
-    };
-
-    const fetchDataWorkplaces = async () => {
-      const { data } = await api.get("workplaces");
-      workplaces.value = data;
-    };
-
-    const fetchDataEmployeeTypes = async () => {
-      const { data } = await api.get("types");
-      employeeTypes.value = data;
-    };
-
     onMounted(() => {
-      fetchDataEmployees();
-      fetchDataEmployees();
-      fetchDataWorkplaces();
-      fetchDataEmployeeTypes();
+      // fetchData
     });
 
     watch(typeSelected, async () => {
-      await fetchDataEmployees();
+      //await fetchDataEmployees();
     });
 
     return {
